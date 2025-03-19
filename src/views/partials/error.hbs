@@ -1,0 +1,10 @@
+{{#if errors}}
+  <div class="notification is-light is-warning">
+    <strong>There was a problem...</strong>
+    <ul style="list-style-type: disc; padding-left: 20px;">
+      {{#each errors}}
+        <li>{{this.message}}</li>
+      {{/each}}
+    </ul>
+  </div>
+{{/if}}

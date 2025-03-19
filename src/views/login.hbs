@@ -1,0 +1,30 @@
+{{> navbar}}
+
+<section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-6">
+        <h1 class="title">Log in</h1>
+
+        <!--  Render Validation Errors from Partial -->
+        {{> error}}
+
+        <form action="/login" method="POST">
+          <div class="field">
+            <label class="label">Email</label>
+            <input class="input" type="email" placeholder="Enter email" name="email" required>
+          </div>
+
+          <div class="field">
+            <label class="label">Password</label>
+            <input class="input" type="password" placeholder="Enter Password" name="password" required>
+          </div>
+
+          <button class="button is-warning is-fullwidth">Log In</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{> footer}}

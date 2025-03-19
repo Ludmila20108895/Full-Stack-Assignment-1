@@ -1,0 +1,60 @@
+{{> logout-navbar}}
+
+<section class="section">
+  <div class="container">
+    <h1 class="title is-2 has-text-weight-bold has-text-primary">
+      <span style="border-bottom: 5px solid #ffdd57; padding-bottom: 5px;">
+        🏙️ Add New Visited Place
+      </span>
+    </h1>
+
+    <!-- Form to Add a New Place -->
+    <form action="/pois" method="POST" class="box">
+      <div class="field">
+        <input class="input" type="text" name="name" placeholder="Enter place name" required>
+      </div>
+      <input type="hidden" name="category" value="{{category}}"> <!--  Keep track of category -->
+      <button class="button is-primary is-fullwidth">
+          Add Place
+      </button>
+    </form>
+
+    <!--  Display Added Places -->
+    {{#if pois.length}}
+      <h2 class="title is-4 mt-5">Visited Places:</h2>
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>Place</th>
+            <th class="has-text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each pois}}
+            <tr>
+              <td>📍 <strong>{{name}}</strong></td>
+              <td class="has-text-right">
+                <a href="/added-places/{{_id}}" class="button is-warning is-rounded mr-2">
+                  <span class="icon">
+                   <i class="fas fa-folder-open"></i>
+                  </span>
+                </a>
+                <form action="/pois/delete/{{_id}}" method="POST" style="display:inline;">
+                  <button class="button is-warning is-rounded mr-2">
+                    <span class="icon">
+                      <i class="fas fa-trash"></i>
+                    </span>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{else}}
+      <p class="mt-4">No places added yet.</p>
+    {{/if}}
+  </div>
+</section>
+
+{{> footer}}

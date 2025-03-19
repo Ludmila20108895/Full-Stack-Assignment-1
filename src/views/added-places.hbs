@@ -1,0 +1,14 @@
+{{> logout-navbar}}
+<section class="section">
+  <div class="container">
+    <h1 class="title is-2 has-text-weight-bold has-text-primary">
+      📍 {{poi.name}}
+    </h1>
+
+    <p><strong>Category:</strong> {{poi.category}}</p>
+
+    <a href="/pois/add?category={{poi.category}}" class="button is-link mt-4">⬅ Back to List</a>
+  </div>
+</section>
+
+{{> footer}}
