@@ -33,10 +33,10 @@ export const poiController = {
 
       console.log("🔹 Received Data:", request.payload);
 
-      // ✅ Validate input
+      // ✅ Validate input with updated schema
       const { error, value } = PoiSpec.validate(request.payload, { abortEarly: false });
       if (error) {
-        console.log("Validation Error:", error.details);
+        console.log("❌ Validation Error:", error.details);
         const pois = await Poi.find({
           category: request.payload.category,
           createdBy: request.auth.credentials.id,
@@ -44,10 +44,13 @@ export const poiController = {
         return h.view("add-poi", { pois, errors: error.details, isAuthenticated: true });
       }
 
-      // ✅ Save the new place
+      // ✅ Save the new place with all fields
       const newPoi = new Poi({
         name: value.name,
-        category: request.payload.category,
+        visitDate: value.visitDate, // ✅ Store date of visit
+        latitude: value.latitude, // ✅ Store latitude
+        longitude: value.longitude, // ✅ Store longitude
+        category: value.category,
         createdBy: request.auth.credentials.id,
       });
 
@@ -62,23 +65,31 @@ export const poiController = {
 
       return h.view("add-poi", { pois, category: request.payload.category, isAuthenticated: true });
     } catch (error) {
-      console.error("Error adding POI:", error);
+      console.error("❌ Error adding POI:", error);
       return h.view("add-poi", { error: "Could not add POI. Try again!", isAuthenticated: true });
     }
   },
-
   // ✅ Show a Single Place's Details (poi.hbs)
   async showPoi(request, h) {
+    const poi = await Poi.findById(request.params.id).lean();
+    if (!poi) return h.response({ error: "POI not found!" }).code(404);
+    return h.view("added-places", { poi });
+  },
+
+  async uploadImages(request, h) {
     try {
-      if (!request.auth.isAuthenticated) return h.redirect("/login");
+      const poi = await Poi.findById(request.params.id);
+      if (!poi) return h.response({ error: "POI not found!" }).code(404);
 
-      const poi = await Poi.findById(request.params.id).lean();
-      if (!poi) return h.view("added-places", { error: "POI not found!", isAuthenticated: true });
+      if (request.payload.images) {
+        const images = request.payload.images instanceof Array ? request.payload.images : [request.payload.images];
+        images.forEach((file) => poi.images.push(file.filename));
+        await poi.save();
+      }
 
-      return h.view("poi", { poi, isAuthenticated: true });
+      return h.redirect(`/added-places/${poi._id}`);
     } catch (error) {
-      console.error(" Error fetching POI:", error);
-      return h.view("added-places", { error: "Failed to load POI!", isAuthenticated: true });
+      return h.response({ error: "Error uploading images." }).code(500);
     }
   },
 
@@ -110,7 +121,7 @@ export const poiController = {
 
       return h.view("added-places", { poi, isAuthenticated: true });
     } catch (error) {
-      console.error("Error loading POI:", error);
+      console.error("❌ Error loading POI:", error);
       return h.view("added-places", { error: "Could not load POI details!", isAuthenticated: true });
     }
   },
