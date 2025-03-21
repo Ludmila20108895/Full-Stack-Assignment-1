@@ -18,6 +18,8 @@
               <label class="label">Place Name</label>
               <div class="control">
                 <input class="input" type="text" name="name" placeholder="Enter place name" required>
+                </strong> {{formatDate poi.visitDate}}</p>
+
               </div>
             </div>
 
@@ -58,16 +60,12 @@
 
           {{#if pois.length}}
             <table class="table is-fullwidth">
-              <thead>
-                <tr>
-                  <th>Place</th>
-                  <th class="has-text-right">Actions</th>
-                </tr>
-              </thead>
+              
               <tbody>
                 {{#each pois}}
                   <tr>
                     <td> <strong>{{name}}</strong></td>
+                    <td><stron>{{formatDate visitDate}}</stron></td>
                     <td class="has-text-right">
                       <a href="/added-places/{{_id}}" class="button is-warning is-rounded mr-2">
                         <span class="icon">

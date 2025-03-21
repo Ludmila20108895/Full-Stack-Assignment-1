@@ -1,3 +1,4 @@
+import moment from "moment"; // Install moment.js for formatting Date
 import mongoose from "mongoose";
 import Hapi from "@hapi/hapi";
 import Vision from "@hapi/vision";
@@ -10,10 +11,10 @@ import { routes } from "./routes/routes.js";
 import { poiRoutes } from "./routes/poi-routes.js";
 import { User } from "./models/mongo/user-model.js";
 
-// ✅ Load environment variables
+//  Load environment variables
 dotenv.config();
 
-// ✅ Create Hapi Server
+//  Create Hapi Server
 const server = Hapi.server({
   port: process.env.PORT || 3000,
   host: "localhost",
@@ -24,14 +25,14 @@ const server = Hapi.server({
   },
 });
 
-// ✅ Register plugins
+//  Register plugins
 async function init() {
   try {
     await server.register(Inert);
     await server.register(Vision);
     await server.register(Cookie);
 
-    // ✅ Configure Handlebars for Views
+    //  Configure Handlebars for Views
     server.views({
       engines: { hbs: Handlebars },
       relativeTo: Path.resolve("src"),
@@ -41,7 +42,7 @@ async function init() {
       partialsPath: "views/partials",
     });
 
-    // ✅ Configure authentication strategy
+    //  Configure authentication strategy
     server.auth.strategy("session", "cookie", {
       cookie: {
         name: process.env.COOKIE_NAME,
@@ -57,55 +58,62 @@ async function init() {
           }
           return { isValid: true, credentials: user };
         } catch (error) {
-          console.error("❌ Session validation error:", error);
+          console.error(" Session validation error:", error);
           return { isValid: false };
         }
       },
     });
 
-    // ✅ Set default authentication
+    //  Set default authentication
     server.auth.default({
       strategy: "session",
       mode: "try",
     });
 
-    // ✅ Load all routes (General + POI routes)
+    //  Load all routes (General + POI routes)
     server.route([...routes, ...poiRoutes]);
 
-    // ✅ Serve Static Files (Fix for Logo & Images Not Loading)
+    //  Serve Static Files
     server.route({
       method: "GET",
       path: "/images/{file*}",
       handler: {
         directory: {
-          path: Path.join(process.cwd(), "public/images"), // ✅ Corrected path
+          path: Path.join(process.cwd(), "public/images"),
           listing: false,
         },
       },
-      options: { auth: false }, // ✅ Allow public access
+      options: { auth: false }, //  Allow public access
     });
 
-    // ✅ Start Server
+    // Handlebars Helper to Format Dates
+    Handlebars.registerHelper("formatDate", (dateString) => {
+      if (!dateString) return "Unknown Date";
+
+      return moment(dateString).format("DD-MM-YYYY");
+    });
+
+    //  Start Server
     await server.start();
-    console.log(`✅ Server running on ${server.info.uri}`);
+    console.log(` Server running on ${server.info.uri}`);
   } catch (error) {
-    console.error("❌ Error starting server:", error);
+    console.error(" Error starting server:", error);
     process.exit(1);
   }
 }
 
-// ✅ Handle unhandled promise rejections
+//  Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
-  console.error("❌ Unhandled Promise Rejection:", err);
+  console.error(" Unhandled Promise Rejection:", err);
   process.exit(1);
 });
 
-// ✅ Connect to MongoDB (Ensuring Proper Connection Handling)
+//  Connect to MongoDB (Ensuring Proper Connection Handling)
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Connected to MongoDB"))
+  .then(() => console.log(" Connected to MongoDB"))
   .catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err);
+    console.error(" MongoDB Connection Error:", err);
     process.exit(1); // Stop the server if DB connection fails
   });
 

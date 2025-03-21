@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import moment from "moment";
 
 const poiSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -9,5 +10,9 @@ const poiSchema = new mongoose.Schema({
   longitude: { type: Number, required: true }, //  Required for Google Maps
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
+// Format Date to be displayed
+poiSchema.methods.formatVisitDate = function () {
+  return moment(this.visitDate).format("DD-MM-YYYY");
+};
 
 export const Poi = mongoose.model("Poi", poiSchema);
