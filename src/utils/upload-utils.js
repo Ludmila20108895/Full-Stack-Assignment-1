@@ -1,7 +1,7 @@
 import multer from "multer";
 import path from "path";
 
-// ✅ Define storage for uploaded images
+//  Define storage for uploaded images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/uploads/"); // Save images in /public/uploads
@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// ✅ Only allow image files
+//  Only allow image files
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
