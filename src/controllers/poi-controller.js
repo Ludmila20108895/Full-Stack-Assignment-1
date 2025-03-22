@@ -105,18 +105,18 @@ export const poiController = {
     }
   },
 
-  // ✅ Delete a POI
+  //  Delete a POI
   async deletePoi(request, h) {
     try {
       if (!request.auth.isAuthenticated) return h.redirect("/login");
 
-      // ✅ Find and delete the POI
+      //  Find and delete the POI
       const poi = await Poi.findByIdAndDelete(request.params.id);
       if (!poi) return h.view("poi-list", { error: "POI not found!", isAuthenticated: true });
 
       console.log(`Deleted POI: ${request.params.id}`);
 
-      return h.redirect(`/pois/add?category=${poi.category}`); // ✅ Stay in the correct category
+      return h.redirect(`/pois/add?category=${poi.category}`); //  Stay in the correct category
     } catch (error) {
       console.error("Error deleting POI:", error);
       return h.view("add-poi", { error: "Failed to delete POI!", isAuthenticated: true });
