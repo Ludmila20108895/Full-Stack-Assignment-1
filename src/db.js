@@ -7,7 +7,7 @@ const dbURI = process.env.MONGO_URI || "mongodb://localhost:27017/explorer";
 
 export const connectDB = async () => {
   try {
-    await mongoose.connect(dbURI); // ✅ Removed deprecated options
+    await mongoose.connect(dbURI); // Removed deprecated options
     console.log(" MongoDB connected successfully!");
   } catch (error) {
     console.error(" MongoDB connection failed:", error);
