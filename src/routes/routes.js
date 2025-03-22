@@ -1,6 +1,6 @@
 import { authController } from "../controllers/auth-controller.js";
 import { dashboardController } from "../controllers/dashboard-controller.js";
-import { poiRoutes } from "./poi-routes.js"; // ✅ Include POI routes
+import { poiRoutes } from "./poi-routes.js"; //  Include POI routes
 
 export const routes = [
   {
@@ -41,10 +41,10 @@ export const routes = [
   {
     method: "GET",
     path: "/dashboard",
-    options: { auth: "session" }, // ✅ Require login for dashboard
+    options: { auth: "session" }, //  Require login for dashboard
     handler: dashboardController.index,
   },
 ];
 
-// ✅ Merge POI routes
+//  Merge POI routes
 export const allRoutes = [...routes, ...poiRoutes];
