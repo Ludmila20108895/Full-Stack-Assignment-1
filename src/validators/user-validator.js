@@ -1,6 +1,6 @@
-import Joi from "joi"; // ✅ Correct Joi import
+import Joi from "joi"; //  Correct Joi import
 
-// ✅ Schema for User Signup
+//  Schema for User Signup
 export const UserSpec = Joi.object({
   firstName: Joi.string().min(3).max(30).required().messages({
     "string.empty": "First Name is required!",
@@ -22,7 +22,7 @@ export const UserSpec = Joi.object({
   }),
 });
 
-// ✅ Schema for User Login
+//  Schema for User Login
 export const UserCredentialsSpec = Joi.object({
   email: Joi.string().email().required().messages({
     "string.empty": "Email is required!",
