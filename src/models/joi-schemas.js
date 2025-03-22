@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-// ✅ User Signup Validation (UNCHANGED)
+//  User Signup Validation (UNCHANGED)
 export const UserSpec = Joi.object({
   firstName: Joi.string().min(3).max(30).required().messages({
     "string.empty": "First Name is required!",
@@ -20,7 +20,7 @@ export const UserSpec = Joi.object({
   }),
 });
 
-// ✅ User Login Validation (UNCHANGED)
+//  User Login Validation (UNCHANGED)
 export const UserCredentialsSpec = Joi.object({
   email: Joi.string().email().required().messages({
     "string.empty": "Email is required!",
@@ -31,7 +31,7 @@ export const UserCredentialsSpec = Joi.object({
   }),
 });
 
-// ✅ POI (Point of Interest) Validation - **Includes Category**
+//  POI (Point of Interest) Validation - **Includes Category**
 export const PoiSpec = Joi.object({
   name: Joi.string().min(2).max(100).required().messages({
     "string.empty": "Place name is required!",
