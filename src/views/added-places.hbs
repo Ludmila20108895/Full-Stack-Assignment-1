@@ -29,18 +29,22 @@
         </div>
       </div>
 
-      <!-- Right Column: Google Maps Embed -->
+      <!--  Right Column: Google Maps Embed -->
       <div class="column is-half">
         <div class="box has-background-light p-5">
           <h2 class="title is-4 has-text-primary">Location</h2>
+          
           <iframe
             width="100%"
             height="200"
             frameborder="0"
             style="border:0"
-            src="https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q={{poi.latitude}},{{poi.longitude}}"
-            allowfullscreen>
+            src="https://www.google.com/maps/embed/v1/place?key={{GOOGLE_MAPS_API_KEY}}&q={{poi.latitude}},{{poi.longitude}}"
+
+
+            Allowfullscreen>
           </iframe>
+
 
           <!--  Open in Google Maps Button -->
           <p class="mt-3">
@@ -54,23 +58,25 @@
     </div>
 
     <!--  Images Section (Photo Album) -->
-    <div class="box mt-5">
-      <h2 class="title is-4 has-text-primary">📸 Photo Album</h2>
+<div class="box mt-5">
+  <h2 class="title is-4 has-text-primary">📸 Photo Album</h2>
 
-      {{#if poi.images.length}}
-        <div class="columns is-multiline">
-          {{#each poi.images}}
-            <div class="column is-one-quarter">
-              <figure class="image is-4by3">
-                <img src="/uploads/{{this}}" alt="POI Image" class="is-rounded">
-              </figure>
-            </div>
-          {{/each}}
+  {{#if poi.imageUrls.length}}
+    <div class="columns is-multiline">
+      {{#each poi.imageUrls}}
+        <div class="column is-one-quarter">
+          <figure class="image is-4by3">
+            <img src="{{this}}" alt="Image" style="max-width: 150px; max-height: 150px;">
+
+          </figure>
         </div>
-      {{else}}
-        <p class="has-text-grey-light">No images uploaded yet.</p>
-      {{/if}}
+      {{/each}}
     </div>
+  {{else}}
+    <p class="has-text-grey-light">No images uploaded yet.</p>
+  {{/if}}
+</div>
+
 
     <!--  Back to List Button -->
     <div class="has-text-centered mt-5">
