@@ -24,7 +24,7 @@ export const authController = {
 
       request.cookieAuth.set({ id: user._id });
 
-      // ✅ Redirect users to the POI page after login
+      // Redirect users to the POI page after login
       return h.redirect("/pois");
     } catch (error) {
       console.error("Login error:", error);

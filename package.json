@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "lint": "./node_modules/.bin/eslint . --ext .js"
+    "lint": "./node_modules/.bin/eslint . --ext .js",
+    "test": "mocha tests/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -20,16 +21,21 @@
   },
   "homepage": "https://github.com/Ludmila20108895/Full-Stack-Assignment-1#readme",
   "dependencies": {
+    "@hapi/boom": "^10.0.1",
     "@hapi/cookie": "^12.0.1",
     "@hapi/hapi": "^21.3.12",
     "@hapi/inert": "^7.1.0",
     "@hapi/joi": "^17.1.1",
     "@hapi/vision": "^7.0.3",
+    "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
+    "form-data": "^4.0.2",
     "handlebars": "^4.7.8",
+    "hapi-auth-jwt2": "^11.0.0",
     "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
     "lowdb": "^7.0.1",
     "moment": "^2.30.1",
     "mongoose": "^8.12.1",
@@ -37,10 +43,12 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "chai": "^5.2.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-import": "^2.31.0",
+    "mocha": "^11.1.0",
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2"
   }

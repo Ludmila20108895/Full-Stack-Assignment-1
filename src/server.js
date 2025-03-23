@@ -1,5 +1,6 @@
 import moment from "moment"; // Install moment.js for formatting Date
 import mongoose from "mongoose";
+
 import Hapi from "@hapi/hapi";
 import Vision from "@hapi/vision";
 import Inert from "@hapi/inert";
@@ -10,6 +11,7 @@ import Path from "path";
 import { routes } from "./routes/routes.js";
 import { poiRoutes } from "./routes/poi-routes.js";
 import { User } from "./models/mongo/user-model.js";
+import { apiRoutes } from "./routes/api-routes.js";
 
 //  Load environment variables
 dotenv.config();
@@ -50,7 +52,7 @@ async function init() {
         isSecure: false,
       },
       redirectTo: "/login",
-      validate: async (request, session) => {
+      validate: async (_request, session) => {
         try {
           const user = await User.findById(session.id);
           if (!user) {
@@ -70,10 +72,10 @@ async function init() {
       mode: "try",
     });
 
-    //  Load all routes (General + POI routes)
-    server.route([...routes, ...poiRoutes]);
+    //  Load all routes (users + API routes + POI routes)
+    server.route([...routes, ...poiRoutes, ...apiRoutes]);
 
-    //  Serve Static Files
+    //  Serve Static Files from /public/images
     server.route({
       method: "GET",
       path: "/images/{file*}",
@@ -83,14 +85,26 @@ async function init() {
           listing: false,
         },
       },
-      options: { auth: false }, //  Allow public access
+      options: { auth: false }, // Allow public access
+    });
+
+    // uploads folder for image access
+    server.route({
+      method: "GET",
+      path: "/uploads/{param*}",
+      handler: {
+        directory: {
+          path: Path.join(process.cwd(), "uploads"),
+          listing: false,
+        },
+      },
+      options: { auth: false },
     });
 
     // Handlebars Helper to Format Dates
     Handlebars.registerHelper("formatDate", (dateString) => {
       if (!dateString) return "Unknown Date";
-
-      return moment(dateString).format("DD-MM-YYYY");
+      return moment(dateString, ["YYYY-MM-DD", "DD-MM-YYYY", moment.ISO_8601]).format("DD-MM-YYYY");
     });
 
     //  Start Server
