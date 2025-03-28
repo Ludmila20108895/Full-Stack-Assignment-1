@@ -70,9 +70,9 @@ public/ # Static assets
 
 ## Getting Started
 
-1. `npm install'
+1. npm install
 
-2. Configure `.env' file:
+2. Configure .env file:
 
    JWT_SECRET=SecretKey
    MONGO_URL=mongodb://localhost/explorer
