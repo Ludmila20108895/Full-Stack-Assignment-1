@@ -1,26 +1,26 @@
-import Joi from "joi";
+import Joi from "joi"; // Import Joi for schema-based input validation
 
-//  User Signup Validation (UNCHANGED)
+// User Signup Validation Schema
 export const UserSpec = Joi.object({
   firstName: Joi.string().min(3).max(30).required().messages({
-    "string.empty": "First Name is required!",
-    "string.min": "First Name must be at least 3 characters long.",
+    "string.empty": "First Name is required!", // when  User didn't type anything
+    "string.min": "First Name must be at least 3 characters long.", // Too short
   }),
   lastName: Joi.string().min(3).max(30).required().messages({
     "string.empty": "Last Name is required!",
     "string.min": "Last Name must be at least 3 characters long.",
   }),
   email: Joi.string().email().required().messages({
-    "string.empty": "Email is required!",
-    "string.email": "Invalid email format!",
+    "string.empty": "Email is required!", // Missing input
+    "string.email": "Invalid email format!", // Not a valid email
   }),
   password: Joi.string().min(6).required().messages({
-    "string.empty": "Password is required!",
-    "string.min": "Password should have at least 6 characters!",
+    "string.empty": "Password is required!", // No password entered
+    "string.min": "Password should have at least 6 characters!", // Too weak
   }),
 });
 
-//  User Login Validation (UNCHANGED)
+//  User Login Validation Schema
 export const UserCredentialsSpec = Joi.object({
   email: Joi.string().email().required().messages({
     "string.empty": "Email is required!",

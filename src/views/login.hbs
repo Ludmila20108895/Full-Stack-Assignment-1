@@ -6,10 +6,11 @@
       <div class="column is-6">
         <h1 class="title">Log in</h1>
 
-        <!--  Render Validation Errors from Partial -->
+         <!-- Include the error partial to display any validation or login errors -->
+         <!-- Displays those errors passed from controller -->
         {{> error}}
 
-        <form action="/login" method="POST">
+        <form action="/login" method="POST"> <!-- Sends login credentials to /login (via POST) -->
           <div class="field">
             <label class="label">Email</label>
             <input class="input" type="email" placeholder="Enter email" name="email" required>

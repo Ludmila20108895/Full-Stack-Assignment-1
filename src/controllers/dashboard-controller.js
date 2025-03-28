@@ -1,5 +1,5 @@
 export const dashboardController = {
-  async index(request, h) {
+  async index(_request, h) {
     return h.view("dashboard", { title: "Explorer Dashboard" });
   },
 };

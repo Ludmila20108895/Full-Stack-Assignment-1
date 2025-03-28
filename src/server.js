@@ -1,64 +1,76 @@
-import moment from "moment"; // Install moment.js for formatting Date
-import mongoose from "mongoose";
+// Dependencies
+import moment from "moment"; // Used for formatting dates
+import mongoose from "mongoose"; // MongoDB object modeling
+import Hapi from "@hapi/hapi"; // Web framework
+import Vision from "@hapi/vision"; // Template rendering support (like Handlebars)
+import Inert from "@hapi/inert"; // Serving static files (images, CSS, etc.)
+import Cookie from "@hapi/cookie"; // For cookie-based sessions
+import HapiAuthJWT from "hapi-auth-jwt2"; // JWT auth plugin
+import dotenv from "dotenv"; // Loads environment variables
+import Handlebars from "handlebars"; // Templating engine
+import Path from "path"; // Handles file paths
 
-import Hapi from "@hapi/hapi";
-import Vision from "@hapi/vision";
-import Inert from "@hapi/inert";
-import Cookie from "@hapi/cookie";
-import dotenv from "dotenv";
-import Handlebars from "handlebars";
-import Path from "path";
-import { routes } from "./routes/routes.js";
-import { poiRoutes } from "./routes/poi-routes.js";
-import { User } from "./models/mongo/user-model.js";
-import { apiRoutes } from "./routes/api-routes.js";
+import HapiSwagger from "hapi-swagger"; // Swagger plugin for API docs
 
-//  Load environment variables
-dotenv.config();
+// Internal modules
+import { allRoutes } from "./routes/routes.js"; // View-related routes (for example: /pois, /login)
+import { apiRoutes } from "./routes/api-routes.js"; // Routes for API endpoints (for example: /api/pois)
+import { User } from "./models/mongo/user-model.js"; // MongoDB user model
+import { validate } from "./utils/jwt-utils.js"; // JWT validation function
 
-//  Create Hapi Server
+const projectVersion = "1.0.0"; // Manual version number for Swagger display
+
+dotenv.config(); // will load  environment variables from .env file
+
+// Will create the Hapi server instance
 const server = Hapi.server({
   port: process.env.PORT || 3000,
   host: "localhost",
   routes: {
     files: {
-      relativeTo: Path.join(process.cwd(), "public"),
+      relativeTo: Path.join(process.cwd(), "public"), // Serve static files from /public
     },
   },
 });
 
-//  Register plugins
 async function init() {
   try {
-    await server.register(Inert);
-    await server.register(Vision);
-    await server.register(Cookie);
+    // Register Hapi plugins for handling static files, templates, cookies, and JWT auth
+    await server.register([
+      Inert,
+      Vision,
+      Cookie,
+      HapiAuthJWT,
+      {
+        plugin: HapiSwagger,
+        options: {
+          info: {
+            title: "Explorer API Documentation",
+            version: projectVersion,
+          },
+        },
+      },
+    ]);
 
-    //  Configure Handlebars for Views
-    server.views({
-      engines: { hbs: Handlebars },
-      relativeTo: Path.resolve("src"),
-      path: "views",
-      layout: "layout",
-      layoutPath: "views/layouts",
-      partialsPath: "views/partials",
+    // Configure JWT authentication (used for API routes)
+    server.auth.strategy("jwt", "jwt", {
+      key: process.env.JWT_SECRET, // Secret key from .env
+      validate, // Function to validate the JWT
+      verifyOptions: { algorithms: ["HS256"] },
     });
 
-    //  Configure authentication strategy
+    // Cookie-based session auth (used for browser-based UI routes)
     server.auth.strategy("session", "cookie", {
       cookie: {
         name: process.env.COOKIE_NAME,
         password: process.env.COOKIE_PASSWORD,
-        isSecure: false,
+        isSecure: false, // Should be true in production with HTTPS
       },
-      redirectTo: "/login",
+      redirectTo: "/login", // Redirect if not logged in
       validate: async (_request, session) => {
         try {
-          const user = await User.findById(session.id);
-          if (!user) {
-            return { isValid: false };
-          }
-          return { isValid: true, credentials: user };
+          const user = await User.findById(session.id); // Check if user still exists
+          return { isValid: !!user, credentials: user };
         } catch (error) {
           console.error(" Session validation error:", error);
           return { isValid: false };
@@ -66,29 +78,42 @@ async function init() {
       },
     });
 
-    //  Set default authentication
+    // Set "session" auth as default for all routes, but allow unauthenticated access ("try" mode)
     server.auth.default({
       strategy: "session",
       mode: "try",
     });
 
-    //  Load all routes (users + API routes + POI routes)
-    server.route([...routes, ...poiRoutes, ...apiRoutes]);
+    // Configures Handlebars as the view engine
+    server.views({
+      engines: { hbs: Handlebars }, // Use Handlebars for .hbs files
+      relativeTo: Path.resolve("src"), // Base path for views
+      path: "views", // Directory for page templates
+      layout: "layout", // Default layout to use (views/layouts/layout.hbs)
+      layoutPath: "views/layouts", // Layouts directory
+      partialsPath: "views/partials", // Directory for reusable template chunks
+    });
 
-    //  Serve Static Files from /public/images
+    // Register all app routes (UI + API)
+    server.route([...allRoutes, ...apiRoutes]);
+
+    // Optional: Log all routes to the console (I used for debugging)
+    // console.log("Routes loaded:"); [...allRoutes, ...apiRoutes].forEach((r) => console.log(`- ${r.method} ${r.path}`));
+
+    // Serve static images from /public/images via URL: /images/filename
     server.route({
       method: "GET",
       path: "/images/{file*}",
       handler: {
         directory: {
           path: Path.join(process.cwd(), "public/images"),
-          listing: false,
+          listing: false, // Don't show directory listing
         },
       },
-      options: { auth: false }, // Allow public access
+      options: { auth: false }, // Publicly accessible
     });
 
-    // uploads folder for image access
+    // Serve uploaded images from /uploads via URL: /uploads/filename
     server.route({
       method: "GET",
       path: "/uploads/{param*}",
@@ -101,34 +126,34 @@ async function init() {
       options: { auth: false },
     });
 
-    // Handlebars Helper to Format Dates
+    // Register a custom helper in Handlebars to format dates in templates
     Handlebars.registerHelper("formatDate", (dateString) => {
       if (!dateString) return "Unknown Date";
       return moment(dateString, ["YYYY-MM-DD", "DD-MM-YYYY", moment.ISO_8601]).format("DD-MM-YYYY");
     });
 
-    //  Start Server
+    // Start the Hapi server
     await server.start();
-    console.log(` Server running on ${server.info.uri}`);
+    console.log(` Server running at ${server.info.uri}`);
   } catch (error) {
-    console.error(" Error starting server:", error);
-    process.exit(1);
+    console.error("Error starting server:", error);
+    process.exit(1); // Exit the app if something goes wrong
   }
 }
 
-//  Handle unhandled promise rejections
+// Catch unhandled Promise rejections (good practice)
 process.on("unhandledRejection", (err) => {
-  console.error(" Unhandled Promise Rejection:", err);
+  console.error("Unhandled Rejection:", err);
   process.exit(1);
 });
 
-//  Connect to MongoDB (Ensuring Proper Connection Handling)
+// Connect to MongoDB using Mongoose
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log(" Connected to MongoDB"))
+  .then(() => console.log("Connected to MongoDB"))
   .catch((err) => {
-    console.error(" MongoDB Connection Error:", err);
-    process.exit(1); // Stop the server if DB connection fails
+    console.error("MongoDB Connection Error:", err);
+    process.exit(1);
   });
 
-init();
+init(); // Initialize the app

@@ -1,4 +1,5 @@
 {{> logout-navbar}}
+<!-- Include the navbar for logged-in users with a logout option -->
 
 <section class="section">
   <div class="container">
@@ -7,12 +8,12 @@
     </h1>
 
     <div class="columns">
-      <!-- Left Column: Form for Adding a New Place -->
+      <!-- Left Column -->
       <div class="column is-half">
         <div class="box has-background-light p-5">
           <h2 class="title is-4 has-text-primary"> Place Details</h2>
 
-          <!--  Form to Add a New Place -->
+          <!--  Input fields for name, date, location, and hidden category -->
           <form action="/pois" method="POST">
             <div class="field">
               <label class="label">Place Name</label>
@@ -23,6 +24,7 @@
               </div>
             </div>
 
+            <!-- Date of Visit -->
             <div class="field">
               <label class="label">Date of Visit</label>
               <div class="control">
@@ -30,13 +32,14 @@
               </div>
             </div>
 
+             <!-- Latitude -->
             <div class="field">
               <label class="label">Latitude</label>
               <div class="control">
                 <input class="input" type="number" step="any" name="latitude" placeholder="Enter Latitude" required>
               </div>
             </div>
-
+             <!-- Longitude -->
             <div class="field">
               <label class="label">Longitude</label>
               <div class="control">
@@ -44,8 +47,10 @@
               </div>
             </div>
 
+            <!-- Hidden Category (set by query param in route) -->
             <input type="hidden" name="category" value="{{category}}">
 
+            <!-- Submit Button -->
             <button class="button is-primary is-fullwidth">
               Add Place
             </button>
@@ -53,12 +58,14 @@
         </div>
       </div>
 
-      <!--  Right Column: List of Added Places -->
+      <!--  Right Column: List of Existing Places Added -->
       <div class="column is-half">
         <div class="box has-background-light p-5">
           <h2 class="title is-4 has-text-primary">📍 Visited Places</h2>
 
           {{#if pois.length}}
+
+          <!-- Lists all POIs user has added under this category -->
             <table class="table is-fullwidth">
               
               <tbody>
@@ -67,12 +74,15 @@
                     <td> <strong>{{name}}</strong></td>
                     <td><stron>{{formatDate visitDate}}</stron></td>
                     <td class="has-text-right">
+
+                      <!-- View Button -->
                       <a href="/added-places/{{_id}}" class="button is-warning is-rounded mr-2">
                         <span class="icon">
                           <i class="fas fa-folder-open"></i>
                         </span>
                       </a>
 
+                       <!-- Delete Button (submits a POST form to delete route) -->
                       <form action="/pois/delete/{{_id}}" method="POST" style="display:inline;">
                         <button class="button is-warning is-rounded mr-2">
                           <span class="icon">
@@ -82,16 +92,19 @@
                       </form>
                     </td>
                   </tr>
-                {{/each}}
+                  
+                {{/each}} 
               </tbody>
             </table>
           {{else}}
+             <!-- Message if no POIs added yet -->
             <p class="has-text-grey-light">No places added yet.</p>
-          {{/if}}
+
+          {{/if}} 
         </div>
       </div>
     </div>
 
    
-
+<!-- Include footer partial -->
 {{> footer}}
