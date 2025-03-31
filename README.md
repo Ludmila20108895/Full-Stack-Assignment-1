@@ -66,7 +66,7 @@ public/ # Static assets
 
 ### - Full test coverage (auth, POI, models, upload)
 
-### - Deployment ready for Render: https: //explorer-app.onrender.com
+### - Deployment ready for Render:   https://explorer-app.onrender.com
 
 ## Getting Started
 
