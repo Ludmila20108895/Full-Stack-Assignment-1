@@ -25,6 +25,7 @@ dotenv.config(); // will load  environment variables from .env file
 // Will create the Hapi server instance
 const server = Hapi.server({
   port: process.env.PORT || 3000,
+  host: "0.0.0.0",
   routes: {
     files: {
       relativeTo: Path.join(process.cwd(), "public"), // Serve static files from /public
