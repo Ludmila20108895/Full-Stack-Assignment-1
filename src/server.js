@@ -32,6 +32,11 @@ const server = Hapi.server({
     },
   },
 });
+server.ext("onRequest", (request, h) => {
+  console.log(`[${new Date().toISOString()}] ${request.method.toUpperCase()} ${request.path}`);
+  return h.continue;
+});
+
 
 async function init() {
   try {
